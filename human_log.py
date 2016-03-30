@@ -11,8 +11,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Inspired from: https://github.com/redhat-openstack/khaleesi/blob/master/plugins/callbacks/human_log.py
-# Further improved support Ansible 2.0
 
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
@@ -22,12 +20,14 @@ try:
 except ImportError:
     import json
 
+from ansible.plugins.callback import CallbackBase
+
 # Fields to reformat output for
 FIELDS = ['cmd', 'command', 'start', 'end', 'delta', 'msg', 'stdout',
           'stderr', 'results']
 
 
-class CallbackModule(object):
+class CallbackModule(CallbackBase):
 
     """
     Ansible callback plugin for human-readable result logging
@@ -35,15 +35,19 @@ class CallbackModule(object):
     CALLBACK_VERSION = 2.0
     CALLBACK_TYPE = 'notification'
     CALLBACK_NAME = 'human_log'
-    CALLBACK_NEEDS_WHITELIST = False
+    CALLBACK_NEEDS_WHITELIST = True
+
+    def __init__(self, display=None):
+        super(CallbackModule, self).__init__(display)
 
     def human_log(self, data):
         if type(data) == dict:
             for field in FIELDS:
                 no_log = data.get('_ansible_no_log')
-                if field in data.keys() and data[field] and no_log != True:
+                if field in data.keys() and data[field] and no_log is not True:
                     output = self._format_output(data[field])
-                    print("\n{0}: {1}".format(field, output.replace("\\n","\n")))
+                    print("\n{0}: {1}".format(field,
+                                              output.replace("\\n", "\n")))
 
     def _format_output(self, output):
         # Strip unicode
@@ -131,7 +135,9 @@ class CallbackModule(object):
     def playbook_on_task_start(self, name, is_conditional):
         pass
 
-    def playbook_on_vars_prompt(self, varname, private=True, prompt=None, encrypt=None, confirm=False, salt_size=None, salt=None, default=None):
+    def playbook_on_vars_prompt(self, varname, private=True, prompt=None,
+                                encrypt=None, confirm=False, salt_size=None,
+                                salt=None, default=None):
         pass
 
     def playbook_on_setup(self):
@@ -152,8 +158,7 @@ class CallbackModule(object):
     def on_file_diff(self, host, diff):
         pass
 
-
-    ####### V2 METHODS ######
+    # ###### V2 METHODS ######
     def v2_on_any(self, *args, **kwargs):
         pass
 

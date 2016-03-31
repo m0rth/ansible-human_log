@@ -23,8 +23,7 @@ except ImportError:
 from ansible.plugins.callback import CallbackBase
 
 # Fields to reformat output for
-FIELDS = ['cmd', 'command', 'start', 'end', 'delta', 'msg', 'stdout',
-          'stderr', 'results']
+FIELDS = ['cmd', 'command', 'msg', 'stdout', 'stderr', 'results', 'reason']
 
 
 class CallbackModule(CallbackBase):
@@ -38,6 +37,7 @@ class CallbackModule(CallbackBase):
     CALLBACK_NEEDS_WHITELIST = True
 
     def __init__(self, display=None):
+        print("human_log callback loaded ...!")
         super(CallbackModule, self).__init__(display)
 
     def human_log(self, data):

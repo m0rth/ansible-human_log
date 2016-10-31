@@ -23,7 +23,7 @@ except ImportError:
 from ansible.plugins.callback import CallbackBase
 
 # Fields to reformat output for
-FIELDS = ['cmd', 'command', 'msg', 'stdout', 'stderr', 'results', 'reason']
+FIELDS = ['cmd', 'command', 'msg', 'results', 'reason']
 
 
 class CallbackModule(CallbackBase):
